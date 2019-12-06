@@ -1,0 +1,31 @@
+ext {
+    // false: 组件模式
+    // true ：集成模式
+    isModule = true
+    androidInfo = [
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.2",
+            targetSdkVersion : 29,
+            minSdkVersion    : 19, //android 4.1
+            versionCode      : 100,
+            versionName      : "1.0.0"
+    ]
+
+    appId = [
+            "app"  : "com.duckchat.jackey",
+            "comn" : "com.jackey.comn",
+            "login": "com.jackey.login"
+    ]
+
+    metaDatas = [
+//            "WX_APP_ID"             : "wx7d314006a5998a80",//微信AppID
+//            "WX_APP_Secret"         : "36f4c00f85dfeef68df209402ff9c726",//微信AppSecret
+
+//"WX_APP_ID"             : "wxd21096ec69594d32",//微信AppID
+//"WX_APP_Secret"         : "bdb07e0bc8d1098db788eed3f6c3146f",//微信AppSecret
+//"JPUSH_APPKEY"          : "f82ecf419eb0ebc52989dbf7",//极光推送AppKey
+//"BaiduLocationKey"      : "OB1uycxMsz91XSQGkeBQTHj6BAxCtCXY", //百度定位Key
+//"BaiduStatisticsKey"    : "22ca240a94", //百度移动统计渠道Key
+//"BaiduStatisticsChannel": "Shop7" //百度移动统计渠道Flag,最终会 生成的格式:Shop7_V{versionName}_{versionCode}
+    ]
+}

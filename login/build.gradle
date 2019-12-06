@@ -1,0 +1,72 @@
+if (isModule) {
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
+
+def androidInfo = rootProject.ext.androidInfo
+def androidId = rootProject.ext.appId
+
+android {
+    compileSdkVersion androidInfo.compileSdkVersion
+    buildToolsVersion androidInfo.buildToolsVersion
+
+
+    defaultConfig {
+        minSdkVersion androidInfo.minSdkVersion
+        targetSdkVersion androidInfo.targetSdkVersion
+        versionCode androidInfo.versionCode
+        versionName androidInfo.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+        vectorDrawables.useSupportLibrary = true
+        if (!isModule) {
+            applicationId androidId['login']
+            // 开启multidex
+            multiDexEnabled true
+        }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+        sourceSets {
+            main {
+                if (isModule) {
+                    manifest.srcFile 'src/main/AndroidManifest.xml'
+                    java.srcDirs 'src/main/java'
+                } else {
+                    manifest.srcFile 'src/main/local/AndroidManifest.xml'
+                    java.srcDirs 'src/main/local/java', 'src/main/java'
+                }
+            }
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation project(':basecomponent')
+//    implementation 'com.alibaba:arouter-api:1.4.0'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+}

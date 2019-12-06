@@ -1,0 +1,144 @@
+apply plugin: 'com.android.application'
+
+def androidInfo = rootProject.ext.androidInfo;
+def appId = rootProject.ext.appId;
+def metaDatas = rootProject.ext.metaDatas;
+
+android {
+    signingConfigs {
+        debug {
+            storeFile file('\\jks\\jackey.jks')
+            storePassword 'jackey'
+            keyAlias = 'jackey'
+            keyPassword 'jackey'
+        }
+        release {
+            storeFile file('\\jks\\jackey.jks')
+            storePassword 'jackey'
+            keyAlias = 'jackey'
+            keyPassword 'jackey'
+        }
+    }
+
+
+    //打包
+    lintOptions {
+        //  true--所有正式版构建执行规则生成崩溃的lint检查，如果有崩溃问题将停止构建
+        checkReleaseBuilds false
+        // true--错误发生后停止gradle构建
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion androidInfo.compileSdkVersion
+    buildToolsVersion androidInfo.buildToolsVersion
+    defaultConfig {
+        applicationId appId['app']
+        minSdkVersion androidInfo.minSdkVersion
+        targetSdkVersion androidInfo.targetSdkVersion
+        versionCode androidInfo.versionCode
+        versionName androidInfo.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
+        // 开启multidex
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+
+    }
+    buildTypes {
+        debug {
+            debuggable = true
+            jniDebuggable = true
+            renderscriptDebuggable = true
+            renderscriptOptimLevel = 3
+            signingConfig signingConfigs.debug
+            minifyEnabled = false
+            multiDexEnabled = true
+            manifestPlaceholders = [StatisticsChannel: 'Debug_${metaDatas[\'BaiduStatisticsChannel\']}_V${androidInfo.versionName}_C${androidInfo.versionCode}']
+        }
+        release {
+            debuggable = false
+            jniDebuggable = false
+            renderscriptDebuggable = false
+            renderscriptOptimLevel = 3
+            signingConfig signingConfigs.release
+            minifyEnabled = true
+            multiDexEnabled = true
+            proguardFiles 'proguard-rules.pro'
+            manifestPlaceholders = [StatisticsChannel: 'Release_${metaDatas[\'BaiduStatisticsChannel\']}_V${androidInfo.versionName}_C${androidInfo.versionCode}']
+        }
+    }
+    // 自定义APK安装包名(Gradle 3.3 新版本配置)
+    applicationVariants.all { variant ->
+        variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { output ->
+            if (variant.buildType.name.contains("debug")) {
+                output.outputFileName = rootProject.name + "_V" + variant.versionName + "_Debug.apk"
+            } else {
+                output.outputFileName = rootProject.name + "_V" + variant.versionName + "_Release.apk"
+            }
+        }
+    }
+
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+//          assets.srcDirs = ['assets']  //这里不能配置这个,配置了assets下的.db文件无法打包进APK的assets下,见鬼了,其他文件,比如,errorpage就可以
+        }
+    }
+//    buildTypes {
+//        release {
+//            signingConfig signingConfigs.release
+//            shrinkResources false//打开资源压缩:移除无用的resource文件,仅打包使用,可以减小apk大小
+//            minifyEnabled true //false 关闭混淆
+//            //proguard-android.txt为系统已经预先设置的混淆文件，proguard-rules.pro是我们自己的混淆文件
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            manifestPlaceholders = [
+//                    BaiduStatisticsChannel: "Release_${metaDatas['BaiduStatisticsChannel']}_V${androidInfo.versionName}_C${androidInfo.versionCode}" //百度移动统计渠道信息
+//            ]
+//            applicationIdSuffix = appId.app
+//            versionNameSuffix = androidInfo.versionName
+//            multiDexEnabled = true
+//        }
+//        debug {
+//            shrinkResources false//打开资源压缩:移除无用的resource文件,仅打包使用,可以减小apk大小
+//            minifyEnabled false //false 关闭混淆
+//            //proguard-android.txt为系统已经预先设置的混淆文件，proguard-rules.pro是我们自己的混淆文件
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            manifestPlaceholders = [
+//                    BaiduStatisticsChannel: "Debug_${metaDatas['BaiduStatisticsChannel']}_V${androidInfo.versionName}_C${androidInfo.versionCode}" //百度移动统计渠道信息
+//            ]
+//            applicationIdSuffix = appId.app
+//            versionNameSuffix = androidInfo.versionName
+//            jniDebuggable = true
+//            renderscriptDebuggable = true
+//            multiDexEnabled = true
+//        }
+//    }
+//    flavorDimensions 'jackey'
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    if (isModule) {
+        implementation project(':basecomponent')
+        implementation project(':login')
+    } else {
+        implementation project(':basecomponent')
+    }
+}
