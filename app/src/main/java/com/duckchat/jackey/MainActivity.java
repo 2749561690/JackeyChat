@@ -23,3 +23,4 @@ public class MainActivity extends AppCompatActivity {
         ARouter.getInstance().build("/login/login").withString("identity", deviesId).navigation();
     }
 }
+

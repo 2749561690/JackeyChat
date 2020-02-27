@@ -136,9 +136,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     if (isModule) {
-        implementation project(':basecomponent')
+//        implementation project(':basecomponent')
         implementation project(':login')
     } else {
-        implementation project(':basecomponent')
+//        implementation project(':basecomponent')
     }
+    implementation 'com.github.2749561690.JackeyChat:basecomponent:1.0'
 }
